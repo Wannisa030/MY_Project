@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+  <title>RoV</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename= '/css/' + 'style.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+  <!-- กรองตาราง -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <!-- เรียกใช้ jQuery tablesorter -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js"></script>
+  <style>
+    #prevBtn,
+    #nextBtn {
+      padding: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 30px;
+      /* กำหนดขนาดไอคอน */
+    }
+
+    .page-link {
+      background-color: #17142B;
+      color: #ffffff;
+      border-radius: 20px;
+      margin: 15px 0 0 0;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg" style="background-color: #17142b">
+      <div class="container">
+          <a class="navbar-brand" href="/">
+              <h3 class="text-white">ROV</h3>
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+              aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavDropdown">
+              <ul class="navbar-nav ms-auto">
+                  <li class="nav-item">
+                      <a class="nav-link" href="/">Home</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="/team">Team</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="/rulec">กฎกติกา</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="/schedulec">ตารางการแข่งขัน</a>
+                  </li>
+                  <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                          data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> จัดการข้อมูล </a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                          <a class="dropdown-item" href="/school">School</a>
+                          <a class="dropdown-item" href="/teamad">Team</a>
+                          <a class="dropdown-item" href="/teammem">Player</a>
+                          <a class="dropdown-item" href="/hero">Hero</a>
+                          <a class="dropdown-item" href="/upload">ข้อมูลการแข่งขัน</a>
+                          <a class="dropdown-item" href="/rule">กฎกติกา</a>
+                          <a class="dropdown-item" href="/schedule">ตารางการแข่งขัน</a>
+                          <a class="dropdown-item" href="/report">รายงาน</a>
+                      </div>
+                  </li>
+                  <!-- ถ้าเข้าสู่ระบบแล้ว (logged_in เป็น True) -->
+                  <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                          data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding: 0px;">
+                          <img src="/static/img/login.jpg" width="40px"
+                              style="border: solid 2px rgb(3, 245, 225); border-radius: 30px;">
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                          <!-- ใช้ id="logout-link" เพื่อระบุให้ JavaScript ทำงานกับปุ่ม Logout -->
+                          <a class="dropdown-item" href="/profile">Profile</a>
+                          <a class="dropdown-item" href="javascript:void(0);" onclick="showLogoutConfirmation();"> 
+                            logout </a>
+                            
+                      </div>
+                  </li>
+              </ul>
+          </div>
+      </div>
+  </nav>
+  <div id="tab">
+    <h4>รายชื่อทีม</h4>
+    <div class="border-top my-3"></div>
+    <div style="background-color: rgb(255, 255, 255);padding: 20px;border-radius: 10px;">
+      <div class="container-fluid">
+        <div style="padding: 10px" class="d-flex justify-content-between">
+          <a href="#" class="btn colors_btn" data-toggle="modal" data-target="#addteamModal">เพิ่มทีม</a>
+          <div class="input-group col-md-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+            </div>
+            <input type="text" id="searchInput" class="form-control" placeholder="ค้นหา">
+          </div>
+        </div>
+        <br> {% if data %} <div id="teamTable">
+          <div class="table-responsive"> <!-- เพิ่มคลาส .table-responsive เพื่อให้ตารางเป็น responsive -->
+          <table class="table table-bordered text-center table table-striped tablesorter">
+            <thead>
+              <tr>
+                <th>ลำดับที่</th>
+                <th>ชื่อทีม <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>ชื่อโรงเรียน <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>เพิ่มเติม</th>
+              </tr>
+            </thead>
+            <tbody> {% for row in data %} <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ row.1 }}</td>
+                <td>{{ row.2 }}</td>
+                <td>
+                  <div class="d-flex justify-content-center">
+                    <button href="#" class="btn btn-warning btn-xs me-2" data-bs-toggle="modal"
+                      data-bs-target="#modaledit{{row.0}}">แก้ไข</button>
+                    <form action="/deletet/{{ row.0 }}" method="POST" id="deleteForm{{ row.0 }}">
+                      <button type="button" class="btn btn-danger btn-xs me-2 deleteButton"
+                        data-team-id="{{ row.0 }}">ลบ</button>
+                    </form>
+                    <a href="/add?team_name={{ row.1 }}&school_name={{ row.2 }}" class="btn btn-primary">สมาชิกในทีม</a>
+                  </div>
+                </td>
+              </tr>
+              <!-- Modal edit-->
+              <div class="modal fade" id="modaledit{{row.0}}" tabindex="-1" aria-labelledby="modaledit{{row.0}}Label"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="modaledit{{row.0}}Label">แก้ไขข้อมูล</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <form action="/updatet" method="POST" class="editForm">
+                        <div class="mb-3">
+                          <label for="team_name">ชื่อทีม :</label>
+                          <input type="hidden" name="team_id" value="{{row.0}}">
+                          <input type="text" id="team_name" name="team_name" class="form-control" value="{{row.1}}"
+                            required>
+                        </div>
+                        <div class="mb-3">
+                          <label for="school_name" class="form-label">โรงเรียน :</label>
+                          <select name="school_name" class="form-select" id="school_nameSelect" required>
+                            <option value="" selected disabled hidden>กรุณาเลือกโรงเรียน</option>
+                            {% for school_name in school %}
+                            <!-- แก้ไขตรงนี้เป็น school_name แทน school -->
+                            <option value="{{ school_name }}" {% if row.2 == school_name %}selected{% endif %}>
+                              {{ school_name }}</option> {% endfor %}
+                          </select>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="submit" class="btn btn-success">บันทึก</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div> {% endfor %}
+            </tbody>
+          </table>
+          </div>
+          <nav aria-label="การแบ่งหน้าตารางทีม">
+            <ul class="pagination justify-content-center" id="teamTablePagination">
+            </ul>
+          </nav>
+        </div> {% else %} <div
+          style="text-align: center; height: 55vh; display: flex; justify-content: center; align-items: center;">
+          <p style="font-size: 20px;">ไม่พบข้อมูล</p>
+        </div> {% endif %}
+      </div>
+    </div>
+  </div>
+  <!-- modal add -->
+  <div id="addteamModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">เพิ่มทีม</h5>
+          <button type="button" class="btn-close" data-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addTeamForm" action="/addt" method="POST">
+            <div class="form-group">
+              <label for="team_name">ชื่อทีม :</label>
+              <input type="text" name="team_name" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="school_name">โรงเรียน:</label>
+              <select name="school_name" class="form-control pop" id="school_namelSelect" required>
+                <option value="" selected disabled hidden>กรุณาเลือกโรงเรียน</option> {% for school in school %} <option
+                  value="{{ school }}">{{ school }}</option> {% endfor %}
+              </select>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-success">บันทึก</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+  <!-- เลื่อนตาราง -->
+  <script>
+    // ฟังก์ชันสำหรับจัดการการแสดงหน้าตาราง
+    let currentPage = 1;
+    const rowsPerPage = 50; // จำนวนแถวที่จะแสดงในแต่ละหน้า
+    function showPage(pageNum, tableId) {
+      $(`#${tableId} table tbody tr`).hide(); // ซ่อนแถวทั้งหมดในตาราง
+      const startIndex = (pageNum - 1) * rowsPerPage;
+      const endIndex = startIndex + rowsPerPage;
+      $(`#${tableId} table tbody tr`).slice(startIndex, endIndex).show(); // แสดงแถวสำหรับหน้าปัจจุบัน
+    }
+    // ฟังก์ชันเพิ่มการเปลี่ยนหน้าก่อนหน้า
+    function prevPage(tableId) {
+      if (currentPage > 1) {
+        currentPage--;
+        showPage(currentPage, tableId);
+      }
+    }
+    // ฟังก์ชันเพิ่มการเปลี่ยนหน้าถัดไป
+    function nextPage(tableId, totalPages) {
+      if (currentPage < totalPages) {
+        currentPage++;
+        showPage(currentPage, tableId);
+      }
+    }
+    // เรียกใช้ฟังก์ชันเพื่อเปิดใช้งานการแบ่งหน้า
+    function initializePagination(tableId) {
+      const totalRows = $(`#${tableId} table tbody tr`).length;
+      const totalPages = Math.ceil(totalRows / rowsPerPage);
+      const paginationElement = $(`#${tableId}Pagination`);
+      paginationElement.empty();
+      // สร้างรายการแบ่งหน้าโดยอัตโนมัติ
+      for (let i = 1; i <= totalPages; i++) {
+        const listItem = `<li class="page-item"><a class="page-link me-2" href="#">${i}</a></li>`;
+        paginationElement.append(listItem);
+      }
+      // แสดงหน้าแรกเป็นค่าเริ่มต้น
+      showPage(currentPage, tableId);
+      // จัดการเหตุการณ์การคลิกที่รายการแบ่งหน้า
+      paginationElement.on("click", "a", function (event) {
+        event.preventDefault();
+        currentPage = parseInt($(this).text(), 10);
+        showPage(currentPage, tableId);
+      });
+    }
+    // เรียกใช้ฟังก์ชัน initializePagination สำหรับแต่ละตาราง
+    $(document).ready(function () {
+      initializePagination("teamTable");
+      // ทำซ้ำสำหรับตารางอื่น ๆ
+    });
+    // เพิ่มการเชื่อมต่อฟังก์ชันเปลี่ยนหน้ากับปุ่ม Previous และ Next
+    $(document).ready(function () {
+      $("#prevBtn").on("click", function () {
+        prevPage("playerTable");
+      });
+      $("#nextBtn").on("click", function () {
+        const totalPlayerRows = $("#playerTable table tbody tr").length;
+        const playerTotalPages = Math.ceil(totalPlayerRows / rowsPerPage);
+        nextPage("playerTable", playerTotalPages);
+      });
+      // ทำซ้ำสำหรับตารางอื่น ๆ ตามที่ต้องการ
+    });
+  </script>
+  <!-- แจ้งเตือนเพิ่มข้อมูล -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // ฟังก์ชันสำหรับแสดง SweetAlert2
+      function showAlert(message, status, reloadPage) {
+        Swal.fire({
+          icon: status,
+          title: message,
+          showConfirmButton: false,
+          timer: 1500,
+        }).then(() => {
+          if (reloadPage) {
+            location.reload();
+          }
+        });
+      }
+      // จัดการการส่งฟอร์มเพื่อเพิ่มทีม
+      const addTeamForm = document.querySelector("#addTeamForm");
+      addTeamForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        // รับข้อมูลฟอร์ม
+        const formData = new FormData(addTeamForm);
+        // ส่งคำขอ POST ไปยังเซิร์ฟเวอร์เพื่อเพิ่มทีม
+        fetch("/addt", {
+          method: "POST",
+          body: formData,
+        }).then((response) => response.json()).then((data) => {
+          // ตรวจสอบข้อมูลที่ได้รับจากเซิร์ฟเวอร์
+          if (data.status === "success") {
+            // เพิ่มทีมสำเร็จ แสดง SweetAlert2 สำเร็จและรีเฟรชหน้าใหม่หลังจากนี้
+            showAlert(data.message, "success", true);
+          } else if (data.status === "warning") {
+            // ทีมมีอยู่แล้ว แสดง SweetAlert2 เตือน
+            showAlert(data.message, "warning", false);
+          } else {
+            // แสดงข้อความข้อผิดพลาดทั่วไป (ตัวเลือก)
+            showAlert("เกิดข้อผิดพลาด กรุณาลองอีกครั้งในภายหลัง", "error", false);
+          }
+        }).catch((error) => {
+          console.error("ข้อผิดพลาด:", error);
+          // แสดงข้อความข้อผิดพลาด (ตัวเลือก)
+          showAlert("เกิดข้อผิดพลาด กรุณาลองอีกครั้งในภายหลัง", "error", false);
+        });
+      });
+    });
+  </script>
+  <!-- แจ้งเตือนลบข้อมูล -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const deleteButtons = document.querySelectorAll(".deleteButton");
+      deleteButtons.forEach(function (deleteButton) {
+        deleteButton.addEventListener("click", function () {
+          const teamId = this.getAttribute("data-team-id");
+          // แสดง SweetAlert2 เพื่อยืนยันการลบข้อมูล
+          Swal.fire({
+            title: "คุณต้องการลบทีมนี้หรือไม่?",
+            text: "สมาชิกที่อยู่ในทีมนี้จะถูกลบทั้งหมด ",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "ใช่",
+            cancelButtonText: "ไม่",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // ส่งคำขอลบข้อมูลไปยังเซิร์ฟเวอร์
+              fetch(`/deletet/${teamId}`, {
+                method: "DELETE",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }).then((response) => response.json()).then((data) => {
+                // แสดง SweetAlert2 ว่าลบข้อมูลสำเร็จ
+                Swal.fire({
+                  title: data.message,
+                  icon: "success",
+                  showConfirmButton: false,
+                  timer: 1500,
+                }).then(() => {
+                  // รีเฟรชหน้าหลังจากที่แจ้งเตือนเสร็จสิ้น
+                  location.reload();
+                });
+              }).catch((error) => {
+                console.error("ข้อผิดพลาด:", error);
+                // แสดงข้อความข้อผิดพลาด (ตัวเลือก)
+                showAlert("เกิดข้อผิดพลาด กรุณาลองอีกครั้งในภายหลัง", "error", false);
+              });
+            }
+          });
+        });
+      });
+    });
+  </script>
+  <!-- แจ้งเตือนแก้ไขข้อมูล -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // ฟังก์ชันสำหรับแสดง SweetAlert2
+      function showAlert(message, status, reloadPage) {
+        Swal.fire({
+          icon: status,
+          title: message,
+          showConfirmButton: false,
+          timer: 1500,
+        }).then(() => {
+          if (reloadPage) {
+            location.reload();
+          }
+        });
+      }
+      // จัดการการส่งฟอร์มเพื่อแก้ไขโรงเรียน
+      const editForms = document.querySelectorAll(".editForm");
+      editForms.forEach(function (editForm) {
+        editForm.addEventListener("submit", function (event) {
+          event.preventDefault();
+          const formData = new FormData(editForm);
+          const teamId = formData.get("team_id");
+          fetch("/updatet", {
+            method: "POST",
+            body: formData,
+          }).then((response) => response.json()).then((data) => {
+            if (data.status === "success") {
+              showAlert(data.message, "success", true);
+            } else if (data.status === "warning") {
+              showAlert(data.message, "warning", false);
+            } else {
+              showAlert("เกิดข้อผิดพลาด กรุณาลองอีกครั้งในภายหลัง", "error", false);
+            }
+          }).catch((error) => {
+            console.error("ข้อผิดพลาด:", error);
+            showAlert("เกิดข้อผิดพลาด กรุณาลองอีกครั้งในภายหลัง", "error", false);
+          });
+        });
+      });
+    });
+  </script>
+  <!-- ตัวกรองตาราง -->
+  <script>
+    $(document).ready(function () {
+      $(".tablesorter").tablesorter({
+        widgets: ['zebra']
+      });
+    });
+  </script>
+  <script src="sweetAlert.js"></script>
+  <script src="../static/js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
+</body>
+
+</html>

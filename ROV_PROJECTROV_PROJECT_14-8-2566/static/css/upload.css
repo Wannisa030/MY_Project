@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
+
+.box {
+  padding: 2% 9%;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+input[type="file"]::file-selector-button {
+  font-family :'Courier New', Courier, monospace;
+  padding: 0.2em 0.4em;
+  border-radius: 0.2em;
+  background-color: #111;
+  color:#ffffff ;
+  transition: 1s;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background-color: #949494;
+  border: 2px solid #ffffff;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.438);
+}
+
+/* ---------- display Upload -------------- */
+/* รูป */
+section.upload{
+  width:100%;
+  
+}
+section.upload div.gallery {
+  border: 3px solid #ffffff71;
+  background-color: #ffffff71;
+  color: #111;
+  box-shadow: 3px 3px 3px #00000070;
+  border-radius: 5px;
+}
+
+section.upload div.gallery:hover {
+  border: 4px solid #111;
+  background: #111;
+  color: #ffffff;
+  box-shadow: 2px 2px 5px #17142A;
+}
+
+section.upload div.gallery img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+
+}
+
+section.upload div.desc {
+  padding: 15px;
+  text-align: center;
+}
+
+section.upload * {
+  box-sizing: border-box;
+}
+
+section.upload .responsive {
+  display: inline-block;
+  width: 33.33%;
+  padding: 9px;
+
+}
+
+@media only screen and (max-width: 700px) {
+  section.upload .responsive {
+    width: 50%;
+    margin: 6px 0;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  section.upload .responsive {
+    width: 100%;
+  }
+}
+
+/* จบรูป */

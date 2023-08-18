@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+  <title>RoV</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename= '/css/' + 'style.css') }}">
+  <style>
+    #prevBtn,
+    #nextBtn {
+      padding: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 30px;
+      /* กำหนดขนาดไอคอน */
+    }
+
+    .page-link {
+      background-color: #17142B;
+      color: #ffffff;
+      border-radius: 20px;
+      margin: 15px 0 0 0;
+      cursor: pointer;
+    }
+
+    .img-fluid {
+      position: relative;
+      /* ตั้งค่า position เป็น relative */
+      display: inline-block;
+      /* ให้แสดงเป็นบล็อกอินไลน์ */
+      box-shadow: 0px 4px 4px rgb(110, 109, 109);
+      border: 1px solid rgb(249, 249, 249);
+      border-radius: 20px;
+      transition: filter 0.5s ease, transform 0.5s ease;
+      /* เพิ่มการเปลี่ยนแปลงสไตล์เมื่อ hover */
+      position: relative;
+      overflow: hidden;
+    }
+
+    .img-fluid:hover {
+      /* filter: blur(2px) brightness(80%); */
+      /* สไตล์ที่ให้เมื่อ hover */
+      transform: scale(1.1);
+      /* ขยายภาพเล็กน้อยเมื่อ hover */
+    }
+
+    .team-info {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: auto;
+      padding: 10px;
+      color: rgb(255, 255, 255);
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      -ms-flex-direction: column;
+      flex-direction: column;
+      max-height: auto;
+      pointer-events: none;
+    }
+
+    .team-info-text {
+      background-color: rgba(0, 0, 0, 0.675);
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      margin: 10px;
+      padding: 10px;
+      word-break: break-word;
+      /* เพิ่มคำสั่งให้ข้อความตัดคำเมื่อเกินขอบรูป */
+      border-radius: 10px;
+    }
+
+    /* .team-link:hover .team-info {
+    max-height: 100%;
+  } */
+    .pagination .page-item.active .page-link {
+      background-color: #17142B;
+      color: #ffffff;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg" style="background-color: #17142b">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <h3 class="text-white">ROV</h3>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+        aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/team">Team</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/rulec">กฎกติกา</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/schedulec">ตารางการแข่งขัน</a>
+          </li> {% if logged_in %}
+          <!-- ถ้าเข้าสู่ระบบแล้ว (logged_in เป็น True) -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle me-2" href="#" id="navbarDropdownMenuLink" role="button"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> จัดการข้อมูล </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="/school">School</a>
+              <a class="dropdown-item" href="/teamad">Team</a>
+              <a class="dropdown-item" href="/teammem">Player</a>
+              <a class="dropdown-item" href="/hero">Hero</a>
+              <a class="dropdown-item" href="/upload">ข้อมูลการแข่งขัน</a>
+              <a class="dropdown-item" href="/rule">กฎกติกา</a>
+              <a class="dropdown-item" href="/schedule">ตารางการแข่งขัน</a>
+              <a class="dropdown-item" href="/report">รายงาน</a>
+            </div>
+          </li> {% endif %}
+          <!-- ... รายการเมนูอื่น ๆ ... --> {% if logged_in %}
+          <!-- ถ้าเข้าสู่ระบบแล้ว (logged_in เป็น True) -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding: 0px;">
+              <img src="/static/img/login.jpg" width="40px"
+                style="border: solid 2px rgb(3, 245, 225); border-radius: 30px;">
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <!-- ใช้ id="logout-link" เพื่อระบุให้ JavaScript ทำงานกับปุ่ม Logout -->
+              <a class="dropdown-item" href="/profile">Profile</a>
+              <a class="dropdown-item" href="javascript:void(0);" onclick="showLogoutConfirmation();"> log out </a>
+            </div>
+          </li> {% else %}
+          <!-- ถ้ายังไม่ได้เข้าสู่ระบบ (logged_in เป็น False) -->
+          <li>
+            <a class="nav-link" href="/login"><i class="fa-solid fa-user fa-xl"></i></a>
+          </li> {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div id="tab">
+    <h4>รายชื่อทีม</h4>
+    <div class="border-top my-3"></div>
+    <div style="background-color: rgb(255, 255, 255);padding: 20px;border-radius: 10px;"> {% if data %} <div
+        class="container-fluid">
+        <div style="padding: 10px" class="d-flex justify-content-between">
+          <a href="#"></a>
+          <div class="input-group col-md-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+            </div>
+            <input type="text" id="searchInput" class="form-control" placeholder="ค้นหา">
+          </div>
+        </div>
+        <br>
+        <!-- team Section-->
+        <section>
+          <div class="container">
+            <!-- team Grid Items-->
+            <div class="row justify-content-center"> {% for row in data %}
+              <!-- team Item {{ loop.index }} -->
+              <div class="col-md-6 col-lg-4 mb-5">
+                <div data-bs-target="{{ loop.index }}">
+                  <a href="/member/{{ row.1 }}" class="team-link">
+                    <img class="img-fluid" src="static\img\wallp_rov.jpg" alt="" />
+                    <div class="team-info">
+                      <div class="team-info-text">{{ row.1 }}</div>
+                    </div>
+                  </a>
+                </div>
+              </div> {% endfor %}
+            </div>
+          </div>
+        </section>
+      </div>
+    </div> {% else %} <div
+      style="text-align: center; height: 70vh; display: flex; justify-content: center; align-items: center;">
+      <p style="font-size: 20px;">ไม่พบข้อมูล</p>
+    </div> {% endif %}
+  </div>
+  <!-- ค้นหาคำในตาราง -->
+  <script>
+    $(document).ready(function () {
+      // เมื่อเปลี่ยนค่าในช่องค้นหา
+      $("#searchInput").on("keyup", function () {
+        var value = $(this).val().toLowerCase(); // ข้อความที่ใส่ในช่องค้นหา
+        $("table tbody tr").filter(function () { // กรองแถวในตาราง
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1); // แสดง/ซ่อนแถวตามผลการค้นหา
+        });
+      });
+    });
+  </script>
+  <script src="sweetAlert.js"></script>
+  <script src="../static/js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+</body>
+
+</html>

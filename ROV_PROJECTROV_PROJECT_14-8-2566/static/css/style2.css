@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
+
+.item1 {
+  grid-area: header;
+}
+
+.item2 {
+  grid-area: menu;
+}
+
+.item3 {
+  grid-area: main;
+}
+
+.item4 {
+  grid-area: right;
+}
+
+.item5 {
+  grid-area: footer;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  list-style: none;
+  text-decoration: none;
+  /* overflow-x: hidden; */
+}
+
+body {
+  background: #F5F5F5;
+}
+
+h1,
+h2 {
+  color: #000000;
+}
+
+h1,h2::first-letter {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #17142B;
+}
+
+p {
+  color: #000000;
+  font-weight: bold;
+}
+
+.navbar {
+  background-color: #17142b;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.336);
+}
+
+.navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-list' viewBox='0 0 16 16'%3e%3cpath fill-rule='evenodd' d='M3 11.5A.5.5 0 0 1 3.5 11h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 11.5zM3 8A.5.5 0 0 1 3.5 8h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8zm0-3.5A.5.5 0 0 1 3.5 4h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 4zm0-3A.5.5 0 0 1 3.5.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 1z'/%3e%3c/svg%3e");
+}
+
+/* Navbar Link */
+.navbar-nav .nav-link {
+color: #AEADB5;
+}
+
+/* Navbar Link - Active */
+.navbar-nav .nav-link:active {
+color: #FFF; /* เปลี่ยนสีตัวอักษรเป็นสีขาว */
+}
+
+/* Navbar Link - Hover */
+.navbar-nav .nav-link:hover {
+color: #FFF; /* เปลี่ยนสีตัวอักษรเป็นสีขาว */
+}
+
+/* Navbar Dropdown Link */
+.navbar-nav  .dropdown-item {
+color: #514F60;
+}
+
+/* Navbar Dropdown Link - Active */
+.navbar-nav .dropdown-item .nav-link:active {
+color: #ffffff; /* เปลี่ยนสีตัวอักษรเป็นสีขาว */
+}
+
+/* Navbar Dropdown Link - Hover */
+.navbar-nav .dropdown-item:hover {
+color: #000000; /* เปลี่ยนสีตัวอักษรเป็นดำ */
+}
+.navbar-nav .dropdown-item.active {
+color: #FFF; /* เปลี่ยนสีตัวอักษรเป็นสีขาว */
+}
+
+
+@media (max-width: 991.98px) {
+  .navbar .navbar-collapse {
+      background-color: #17142B;
+  }
+
+  .navbar-nav .nav-link {
+      color: white;
+  }
+
+  .navbar-nav .nav-link:hover {
+      color: rgba(255, 255, 255, 0.75);
+  }
+
+  .navbar-nav .dropdown-menu {
+      background-color: #17142B;
+  }
+
+  .navbar-nav .dropdown-item {
+      color: #ffffff;
+  }
+
+  .navbar-nav .dropdown-item:hover {
+      color: #17142B;
+      background-color: white;
+  }
+
+}
+
+/* button style */
+.center_btn {
+  position: relative;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0 auto;
+  bottom: 20px;
+  width: 220px;
+  height: 50px;
+  border: none;
+  outline: none;
+  color: #fff;
+  background: #111;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.center_btn:before {
+  content: '';
+  background: linear-gradient(45deg, #fb0094, #00f, #0f0, 
+  #ff0, #f00, #fb0094, #00f, #0f0, #ff0, #f00);
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing 20s linear infinite;
+  opacity: 0;
+  transition: opacity .3s ease-in-out;
+  border-radius: 10px;
+}
+
+.center_btn:active {
+  color: #ffffff
+}
+
+.center_btn:active:after {
+  background: transparent;
+}
+
+.center_btn:hover:before {
+  opacity: 1;
+}
+
+.center_btn:after {
+  z-index: -1;
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #111;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
+}
+
+@keyframes glowing {
+  0% {
+    background-position: 0 0;
+  }
+
+  50% {
+    background-position: 400% 0;
+  }
+
+  100% {
+    background-position: 0 0;
+  }
+}
+
+/* end button style */

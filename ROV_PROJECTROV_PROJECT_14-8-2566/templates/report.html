@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+  <title>RoV</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename= '/css/' + 'style.css') }}">
+  <!-- กรองตาราง -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <!-- เรียกใช้ jQuery tablesorter -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js"></script>
+  <style>
+    #prevBtn,
+    #nextBtn {
+      padding: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 30px;
+      /* กำหนดขนาดไอคอน */
+    }
+
+    .page-link {
+      background-color: #17142B;
+      color: #ffffff;
+      border-radius: 20px;
+      margin: 15px 0 0 0;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg" style="background-color: #17142b">
+      <div class="container">
+          <a class="navbar-brand" href="/">
+              <h3 class="text-white">ROV</h3>
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+              aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavDropdown">
+              <ul class="navbar-nav ms-auto">
+                  <li class="nav-item">
+                      <a class="nav-link" href="/">Home</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="/team">Team</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="/rulec">กฎกติกา</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="/schedulec">ตารางการแข่งขัน</a>
+                  </li>
+                  <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                          data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> จัดการข้อมูล </a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                          <a class="dropdown-item" href="/school">School</a>
+                          <a class="dropdown-item" href="/teamad">Team</a>
+                          <a class="dropdown-item" href="/teammem">Player</a>
+                          <a class="dropdown-item" href="/hero">Hero</a>
+                          <a class="dropdown-item" href="/upload">ข้อมูลการแข่งขัน</a>
+                          <a class="dropdown-item" href="/rule">กฎกติกา</a>
+                          <a class="dropdown-item" href="/schedule">ตารางการแข่งขัน</a>
+                          <a class="dropdown-item" href="/report">รายงาน</a>
+                      </div>
+                  </li>
+                  <!-- ถ้าเข้าสู่ระบบแล้ว (logged_in เป็น True) -->
+                  <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                          data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding: 0px;">
+                          <img src="/static/img/login.jpg" width="40px"
+                              style="border: solid 2px rgb(3, 245, 225); border-radius: 30px;">
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                          <!-- ใช้ id="logout-link" เพื่อระบุให้ JavaScript ทำงานกับปุ่ม Logout -->
+                          <a class="dropdown-item" href="/profile">Profile</a>
+                          <a class="dropdown-item" href="javascript:void(0);" onclick="showLogoutConfirmation();"> 
+                            logout </a>
+                            
+                      </div>
+                  </li>
+              </ul>
+          </div>
+      </div>
+  </nav>
+  <div id="tab">
+    <h4>report</h4>
+    <div class="border-top my-3"></div>
+    <div style="background-color: rgb(255, 255, 255);padding: 20px; border-radius: 10px;">
+      <div class="container-fluid">
+        <div style="padding: 10px" class="d-flex justify-content-between">
+          <!-- เลือกตารางที่ต้องการ -->
+          <div>
+            <select id="tableSelect" class="form-select" required>
+              <option value="" selected disabled hidden>กรุณาเลือกข้อมูลที่ต้องการ</option>
+              <option value="results_RoV">ตารางผลการแข่งขัน</option>
+              <option value="result">รายละเอียดการแข่งขัน</option>
+              <option value="position">เปรียบเทียบผู้เข้าแข่งขันที่เล่นตำแหน่งเดียวกัน</option>
+              <option value="kdahero">อัตราการชนะของฮีโร่ที่ผู้เข้าแข่งขันใช้แข่งขัน</option>
+              <option value="result_details">สรุปรวมรายละเอียดการแขงขันของผู้เข้าแข่งขัน</option>
+              <option value="player">ผู้เล่น</option>
+              <option value="team">ทีม</option>
+              <option value="school">โรงเรียน</option>
+            </select>
+          </div>
+          <div class="input-group col-md-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+            </div>
+            <input type="text" id="searchInput" class="form-control" placeholder="ค้นหา">
+          </div>
+        </div>
+        <!-- ผู้เล่น -->
+        <div id="playerTable" style="display: none;">
+          <h2 class="text-center">ผู้เล่น</h2>
+          <div class="d-flex justify-content-between my-2">
+            <a href=""></a>
+            <a class="btn colors_btn" href="{{ url_for('download_player') }}">Download<i class="fa-solid fa-download"
+                style="margin-left: 10px;"></i></a>
+          </div>
+          <div class="table-responsive"> <!-- เพิ่มคลาส .table-responsive เพื่อให้ตารางเป็น responsive -->
+          <table class="table table-bordered text-center table table-striped tablesorter">
+            <thead>
+              <tr>
+                <th>ลำดับ</th>
+                <th>ชื่อ <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>นามสกุล <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>ชื่อที่ใช้ในการแข่งขัน <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>ID ที่ใช้ในการแข่งขัน <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>ทีม<i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>โรงเรียน <i class="fa-solid fa-sort filter-icon"></i></th>
+              </tr>
+            </thead>
+            <tbody> {% if data1 %} {% for row in data1 %} <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ row.1 }}</td>
+                <td>{{ row.2 }}</td>
+                <td>{{ row.3 }}</td>
+                <td>{{ row.4 }}</td>
+                <td>{{ row.5 }}</td>
+                <td>{{ row.6 }}</td>
+              </tr> {% endfor %} {% else %} <tr>
+                <td colspan="7">ไม่พบข้อมูล</td>
+              </tr> {% endif %} </tbody>
+          </table>
+          </div>
+          <nav aria-label="การแบ่งหน้าตารางผู้เล่น">
+            <div class="d-flex justify-content-center align-items-center">
+              <ul class="pagination " id="playerTablePagination">
+                <!-- รายการการแบ่งหน้าจะถูกสร้างโดยอัตโนมัติที่นี่ -->
+                <div class="me-2">
+                </div>
+              </ul>
+            </div>
+          </nav>
+        </div>
+        <!-- โรงเรียน -->
+        <div id="schoolTable" style="display: none;">
+          <h2 class="text-center">โรงเรียน</h2>
+          <div class="d-flex justify-content-between my-2">
+            <a href=""></a>
+            <a class="btn colors_btn" href="{{ url_for('download_school') }}">Download<i class="fa-solid fa-download"
+                style="margin-left: 10px;"></i></a>
+          </div>
+          <div class="table-responsive"> <!-- เพิ่มคลาส .table-responsive เพื่อให้ตารางเป็น responsive -->
+          <table class="table table-bordered text-center table table-striped tablesorter">
+            <thead>
+              <tr>
+                <th>ลำดับ</th>
+                <th>ชื่อโรงเรียน <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>จังหวัด <i class="fa-solid fa-sort filter-icon"></i></th>
+              </tr>
+            </thead>
+            <tbody> {% if data2 %} {% for row in data2 %} <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ row.1 }}</td>
+                <td>{{ row.2 }}</td>
+              </tr> {% endfor %} {% else %} <tr>
+                <td colspan="3">ไม่พบข้อมูล</td>
+              </tr> {% endif %} </tbody>
+          </table>
+          </div>
+          <nav aria-label="การแบ่งหน้าตารางโรงเรียน">
+            <div class="d-flex justify-content-center align-items-center">
+              <ul class="pagination" id="schoolTablePagination">
+                <!-- รายการการแบ่งหน้าจะถูกสร้างโดยอัตโนมัติที่นี่ -->
+              </ul>
+            </div>
+          </nav>
+        </div>
+        <!-- ทีม -->
+        <div id="teamTable" style="display: none;">
+          <h2 class="text-center">ทีม</h2>
+          <div class="d-flex justify-content-between my-2">
+            <a href=""></a>
+            <a class="btn colors_btn" href="{{ url_for('download_team') }}">Download<i class="fa-solid fa-download"
+                style="margin-left: 10px;"></i></a>
+          </div>
+          <div class="table-responsive"> <!-- เพิ่มคลาส .table-responsive เพื่อให้ตารางเป็น responsive -->
+          <table class="table table-bordered text-center table table-striped tablesorter">
+            <thead>
+              <tr>
+                <th>ลำดับ</th>
+                <th>ชื่อทีม <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>โรงเรียน <i class="fa-solid fa-sort filter-icon"></i></th>
+              </tr>
+            </thead>
+            <tbody> {% if data3 %} {% for row in data3 %} <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ row.1 }}</td>
+                <td>{{ row.2 }}</td>
+              </tr> {% endfor %} {% else %} <tr>
+                <td colspan="3">ไม่พบข้อมูล</td>
+              </tr> {% endif %} </tbody>
+          </table>
+         </div>
+          <nav aria-label="การแบ่งหน้าตารางทีม">
+            <div class="d-flex justify-content-center align-items-center">
+              <ul class="pagination" id="teamTablePagination">
+                <!-- รายการการแบ่งหน้าจะถูกสร้างโดยอัตโนมัติที่นี่ -->
+              </ul>
+            </div>
+          </nav>
+        </div>
+        <!-- รายละเอียดการแข่งขัน -->
+        <div id="resultTable" style="display: none;">
+          <h2 class="text-center">รายละเอียดการแข่งขัน</h2>
+          <div class="d-flex justify-content-between my-2">
+            <a href=""></a>
+            <a class="btn colors_btn" href="{{ url_for('download_result') }}">Download<i class="fa-solid fa-download"
+                style="margin-left: 10px;"></i></a>
+          </div>
+          <div class="table-responsive"> <!-- เพิ่มคลาส .table-responsive เพื่อให้ตารางเป็น responsive -->
+          <table class="table table-bordered text-center table table-striped tablesorter">
+            <thead>
+              <tr>
+                <th>ลำดับ</th>
+                <th>ชื่อผู้เล่น <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>kill <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>dead <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>assist <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>KDA <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>money <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>point <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>mvp <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>damage <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>damage% <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>take damage <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>take damage% <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>teamfight <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>teamfight% <i class="fa-solid fa-sort filter-icon"></i></th>
+              </tr>
+            </thead> {% if data4 %} {% for row in data4 %} <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ row.0 }}</td>
+              <td>{{ row.1 }}</td>
+              <td>{{ row.2 }}</td>
+              <td>{{ row.3 }}</td>
+              <td>{{ row.4 }}</td>
+              <td>{{ row.5 }}</td>
+              <td>{{ row.6 }}</td>
+              <td>{{ row.7 }}</td>
+              <td>{{ row.8 }}</td>
+              <td>{{ row.9 }}</td>
+              <td>{{ row.10 }}</td>
+              <td>{{ row.11 }}</td>
+              <td>{{ row.12 }}</td>
+              <td>{{ row.13 }}</td>
+            </tr> {% endfor %} {% else %} <tr>
+              <td colspan="15">ไม่พบข้อมูล</td>
+            </tr> {% endif %} </tbody>
+            </tbody>
+          </table>
+          </div>
+          <nav aria-label="การแบ่งหน้าตารางรายละเอียดการแข่งขัน">
+            <div class="d-flex justify-content-center align-items-center">
+              <ul class="pagination" id="resultTablePagination">
+                <!-- รายการการแบ่งหน้าจะถูกสร้างโดยอัตโนมัติที่นี่ -->
+              </ul>
+          </nav>
+        </div>
+        <!-- สรุปรวมรายละเอียดการแขงขันของผู้เข้าแข่งขัน -->
+        <div id="result_detailsTable" style="display: none;">
+          <h2 class="text-center">สรุปรวมรายละเอียดการแขงขันของผู้เข้าแข่งขัน</h2>
+          <div class="d-flex justify-content-between my-2">
+            <a href=""></a>
+            <a class="btn colors_btn" href="{{ url_for('download_result_details') }}">Download<i
+                class="fa-solid fa-download" style="margin-left: 10px;"></i></a>
+          </div>
+          <div class="table-responsive"> <!-- เพิ่มคลาส .table-responsive เพื่อให้ตารางเป็น responsive -->
+          <table class="table table-bordered text-center table table-striped tablesorter">
+            <thead>
+              <tr>
+                <th>ลำดับ</th>
+                <th>ชื่อผู้เล่น <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>ตำแหน่ง <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>kill <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>dead <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>assist <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>KDA <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>money <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>point <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>mvp <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>damage <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>damage% <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>take damage <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>take damage% <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>teamfight <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>teamfight% <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>Hero ที่ใช้บ่อย <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>ชนะ <i class="fa-solid fa-sort filter-icon"></i></th>
+              </tr>
+            </thead> {% if data5 %} {% for row in data5 %} <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ row.0 }}</td>
+              <td>{{ row.1 }}</td>
+              <td>{{ row.2 }}</td>
+              <td>{{ row.3 }}</td>
+              <td>{{ row.4 }}</td>
+              <td>{{ row.5 }}</td>
+              <td>{{ row.6 }}</td>
+              <td>{{ row.7 }}</td>
+              <td>{{ row.8 }}</td>
+              <td>{{ row.9 }}</td>
+              <td>{{ row.10 }}</td>
+              <td>{{ row.11 }}</td>
+              <td>{{ row.12 }}</td>
+              <td>{{ row.13 }}</td>
+              <td>{{ row.14 }}</td>
+              <td>{{ row.15 }}</td>
+              <td>{{ row.16 }}</td>
+            </tr> {% endfor %} {% else %} <tr>
+              <td colspan="18">ไม่พบข้อมูล</td>
+            </tr> {% endif %} </tbody>
+            </tbody>
+          </table>
+          </div>
+          <nav aria-label="การแบ่งหน้าตารางรายละเอียดการแข่งขัน">
+            <div class="d-flex justify-content-center align-items-center">
+              <ul class="pagination" id="result_detailsTablePagination">
+                <!-- รายการการแบ่งหน้าจะถูกสร้างโดยอัตโนมัติที่นี่ -->
+              </ul>
+          </nav>
+        </div>
+        <!-- เปรียบเทียบผู้เข้าแข่งขันที่เล่นตำแหน่งเดียวกัน -->
+        <div id="positionTable" style="display: none;">
+          <h2 class="text-center">เปรียบเทียบผู้เข้าแข่งขันที่เล่นตำแหน่งเดียวกัน</h2>
+          <div class="d-flex justify-content-between my-2">
+            <a href=""></a>
+            <a class="btn colors_btn" href="{{ url_for('download_position') }}">Download<i class="fa-solid fa-download"
+                style="margin-left: 10px;"></i></a>
+          </div>
+          <div class="table-responsive"> <!-- เพิ่มคลาส .table-responsive เพื่อให้ตารางเป็น responsive -->
+          <table class="table table-bordered text-center table table-striped tablesorter">
+            <thead>
+              <tr>
+                <th>ลำดับ</th>
+                <th>ชื่อผู้เล่น <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>ตำแหน่ง <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>kill <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>dead <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>assist <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>KDA <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>mvp <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>จำนวนครั้งที่ชนะ <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>อัตราการชนะ <i class="fa-solid fa-sort filter-icon"></i></th>
+
+              </tr>
+            </thead>
+            <tbody> {% if data6 %} {% for row in data6 %} <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ row.0 }}</td>
+                <td>{{ row.1 }}</td>
+                <td>{{ row.2 }}</td>
+                <td>{{ row.3 }}</td>
+                <td>{{ row.4 }}</td>
+                <td>{{ row.5 }}</td>
+                <td>{{ row.6 }}</td>
+                <td>{{ row.7 }}</td>
+                <td>{{ row.8 }}</td>
+              </tr> {% endfor %} {% else %} <tr>
+                <td colspan="10">ไม่พบข้อมูล</td>
+              </tr> {% endif %} </tbody>
+          </table>
+          </div>
+          <nav aria-label="การแบ่งหน้าตารางเปรียบเทียบผู้เข้าแข่งขันที่เล่นตำแหน่งเดียวกัน">
+            <div class="d-flex justify-content-center align-items-center">
+              <ul class="pagination" id="positionTablePagination">
+                <!-- รายการการแบ่งหน้าจะถูกสร้างโดยอัตโนมัติที่นี่ -->
+              </ul>
+            </div>
+          </nav>
+        </div>
+        <!-- อัตราการชนะของฮีโร่ที่ผู้เข้าแข่งขันใช้แข่งขัน -->
+        <div id="kdaheroTable" style="display: none;">
+          <h2 class="text-center">อัตราการชนะของฮีโร่ที่ผู้เข้าแข่งขันใช้แข่งขัน</h2>
+          <div class="d-flex justify-content-between my-2">
+            <a href=""></a>
+            <a class="btn colors_btn" href="{{ url_for('download_win_rate_hero') }}">Download<i
+                class="fa-solid fa-download" style="margin-left: 10px;"></i></a>
+          </div>
+          <div class="table-responsive"> <!-- เพิ่มคลาส .table-responsive เพื่อให้ตารางเป็น responsive -->
+          <table class="table table-bordered text-center table table-striped tablesorter">
+            <thead>
+              <tr>
+                <th>ลำดับ</th>
+                <th>Hero <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>KDA <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>จำนวนครั้งที่ชนะ <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>อัตราการชนะ<i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>จำนวนการต่อสู้ <i class="fa-solid fa-sort filter-icon"></i></th>
+
+              </tr>
+            </thead>
+            <tbody> {% if data7 %} {% for row in data7 %} <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ row.0 }}</td>
+                <td>{{ row.1 }}</td>
+                <td>{{ row.2 }}</td>
+                <td>{{ row.3 }}</td>
+                <td>{{ row.4 }}</td>
+              </tr> {% endfor %} {% else %} <tr>
+                <td colspan="6">ไม่พบข้อมูล</td>
+              </tr> {% endif %} </tbody>
+          </table>
+          </div>
+          <nav aria-label="การแบ่งหน้าตารางอัตราการชนะของฮีโร่ที่ผู้เข้าแข่งขันใช้แข่งขัน">
+            <div class="d-flex justify-content-center align-items-center">
+              <ul class="pagination" id="kdaheroTablePagination">
+                <!-- รายการการแบ่งหน้าจะถูกสร้างโดยอัตโนมัติที่นี่ -->
+              </ul>
+            </div>
+          </nav>
+        </div>
+        <!-- ตารางผลการแข่งขัน -->
+        <div id="results_RoVTable" style="display: none; ">
+          <h2 class="text-center">ตารางผลการแข่งขัน</h2>
+          <div class="d-flex justify-content-between my-2">
+            <a href=""></a>
+            <a class="btn colors_btn" href="{{ url_for('download_results_RoV') }}">Download<i class="fa-solid fa-download"
+                style="margin-left: 10px;"></i></a>
+          </div>
+          <div class="table-responsive"> <!-- เพิ่มคลาส .table-responsive เพื่อให้ตารางเป็น responsive -->
+          <table class="table table-bordered text-center table table-striped tablesorter">
+            <thead>
+              <tr>
+                <th>ลำดับ</th>
+                <th>ทีม <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>ชนะ <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>แพ้ <i class="fa-solid fa-sort filter-icon"></i></th>
+                <th>รวม <i class="fa-solid fa-sort filter-icon"></i></th>
+              </tr>
+            </thead>
+            <tbody> {% if data8 %} {% for row in data8 %} <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ row.0 }}</td>
+              <td>{{ row.1 }}</td>
+              <td>{{ row.2 }}</td>
+              <td>{{ row.3 }}</td>
+              </tr> {% endfor %} {% else %} <tr>
+                <td colspan="5">ไม่พบข้อมูล</td>
+              </tr> {% endif %} </tbody>
+          </table>
+          </div>
+          <nav aria-label="การแบ่งหน้าตารางทีม">
+            <div class="d-flex justify-content-center align-items-center">
+              <ul class="pagination" id="results_RoVTablePagination">
+                <!-- รายการการแบ่งหน้าจะถูกสร้างโดยอัตโนมัติที่นี่ -->
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ค้นหาคำในตาราง -->
+  <script>
+    $(document).ready(function () {
+      // เมื่อเปลี่ยนค่าในช่องค้นหา
+      $("#searchInput").on("keyup", function () {
+        var value = $(this).val().toLowerCase(); // ข้อความที่ใส่ในช่องค้นหา
+        $("table tbody tr").filter(function () { // กรองแถวในตาราง
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1); // แสดง/ซ่อนแถวตามผลการค้นหา
+        });
+      });
+    });
+  </script>
+  <!-- เลือกตารางที่ต้องการ -->
+  <script>
+    $(document).ready(function () {
+        // ซ่อนทุกตารางข้อมูลยกเว้น #playerTable
+        $("#schoolTable, #teamTable, #resultTable, #result_detailsTable, #positionTable, #kdaheroTable, #results_RoVTable")
+            .hide();
+        
+        // แสดง #playerTable เป็นตารางที่แสดงเป็นค่าเริ่มต้น
+        $("#playerTable").show();
+
+        // เมื่อเปลี่ยนเลือกใน dropdown
+        $("#tableSelect").on("change", function () {
+            // ซ่อนทุกตารางข้อมูล
+            $("#schoolTable, #teamTable, #playerTable, #resultTable, #result_detailsTable, #positionTable, #kdaheroTable, #results_RoVTable")
+                .hide();
+            
+            // แสดงตารางข้อมูลตามที่ผู้ใช้เลือกใน dropdown
+            var selectedTable = $(this).val();
+            if (selectedTable === "school") {
+                $("#schoolTable").show();
+            } else if (selectedTable === "team") {
+                $("#teamTable").show();
+            } else if (selectedTable === "player") {
+                $("#playerTable").show();
+            } else if (selectedTable === "result") {
+                $("#resultTable").show();
+            } else if (selectedTable === "result_details") {
+                $("#result_detailsTable").show();
+            } else if (selectedTable === "position") {
+                $("#positionTable").show();
+            } else if (selectedTable === "kdahero") {
+                $("#kdaheroTable").show();
+            } else if (selectedTable === "results_RoV") {
+                $("#results_RoVTable").show();
+            }
+        });
+    });
+</script>
+
+  <!-- เลื่อนตาราง -->
+  <script>
+    // ฟังก์ชันสำหรับจัดการการแสดงหน้าตาราง
+    let currentPage = 1;
+    const rowsPerPage = 50; // จำนวนแถวที่จะแสดงในแต่ละหน้า
+    function showPage(pageNum, tableId) {
+      $(`#${tableId} table tbody tr`).hide(); // ซ่อนแถวทั้งหมดในตาราง
+      const startIndex = (pageNum - 1) * rowsPerPage;
+      const endIndex = startIndex + rowsPerPage;
+      $(`#${tableId} table tbody tr`).slice(startIndex, endIndex).show(); // แสดงแถวสำหรับหน้าปัจจุบัน
+    }
+    // ฟังก์ชันเพิ่มการเปลี่ยนหน้าก่อนหน้า
+    function prevPage(tableId) {
+      if (currentPage > 1) {
+        currentPage--;
+        showPage(currentPage, tableId);
+      }
+    }
+    // ฟังก์ชันเพิ่มการเปลี่ยนหน้าถัดไป
+    function nextPage(tableId, totalPages) {
+      if (currentPage < totalPages) {
+        currentPage++;
+        showPage(currentPage, tableId);
+      }
+    }
+    // เรียกใช้ฟังก์ชันเพื่อเปิดใช้งานการแบ่งหน้า
+    function initializePagination(tableId) {
+      const totalRows = $(`#${tableId} table tbody tr`).length;
+      const totalPages = Math.ceil(totalRows / rowsPerPage);
+      const paginationElement = $(`#${tableId}Pagination`);
+      paginationElement.empty();
+      // สร้างรายการแบ่งหน้าโดยอัตโนมัติ
+      for (let i = 1; i <= totalPages; i++) {
+        const listItem = `<li class="page-item"><a class="page-link me-2" href="#">${i}</a></li>`;
+        paginationElement.append(listItem);
+      }
+      // แสดงหน้าแรกเป็นค่าเริ่มต้น
+      showPage(currentPage, tableId);
+      // จัดการเหตุการณ์การคลิกที่รายการแบ่งหน้า
+      paginationElement.on("click", "a", function (event) {
+        event.preventDefault();
+        currentPage = parseInt($(this).text(), 10);
+        showPage(currentPage, tableId);
+      });
+    }
+    // เรียกใช้ฟังก์ชัน initializePagination สำหรับแต่ละตาราง
+    $(document).ready(function () {
+      initializePagination("playerTable");
+      initializePagination("schoolTable");
+      initializePagination("teamTable");
+      initializePagination("resultTable");
+      initializePagination("result_detailsTable");
+      initializePagination("positionTable");
+      initializePagination("kdaheroTable");
+      // ทำซ้ำสำหรับตารางอื่น ๆ
+    });
+    // เพิ่มการเชื่อมต่อฟังก์ชันเปลี่ยนหน้ากับปุ่ม Previous และ Next
+    $(document).ready(function () {
+      $("#prevBtn").on("click", function () {
+        prevPage("playerTable");
+      });
+      $("#nextBtn").on("click", function () {
+        const totalPlayerRows = $("#playerTable table tbody tr").length;
+        const playerTotalPages = Math.ceil(totalPlayerRows / rowsPerPage);
+        nextPage("playerTable", playerTotalPages);
+      });
+      // ทำซ้ำสำหรับตารางอื่น ๆ ตามที่ต้องการ
+    });
+  </script>
+  <!-- ตัวกรองตาราง -->
+  <script>
+    $(document).ready(function () {
+      $(".tablesorter").tablesorter({
+        widgets: ['zebra']
+      });
+    });
+  </script>
+  <script src="sweetAlert.js"></script>
+  <script src="../static/js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+</body>
+
+</html>

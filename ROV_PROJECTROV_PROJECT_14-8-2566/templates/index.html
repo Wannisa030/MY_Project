@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+  <title>RoV</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script> 
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename= '/css/' + 'style.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+  <!-- กรองตาราง -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Include tableexport library -->
+  <script src="https://cdn.jsdelivr.net/npm/tableexport@5.2.2/dist/js/tableexport.min.js"></script>
+  <style>
+    body {
+      overflow-x: hidden;
+      background: #DDDDDD;
+    }
+
+    .page-link {
+      background-color: #17142B;
+      color: #ffffff;
+      border-radius: 20px;
+      margin: 15px 0 0 0;
+      cursor: pointer;
+    }
+
+    .rov {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      /* เพิ่มคำสั่งนี้ */
+    }
+
+    #text {
+      position: absolute;
+      font-size: 5em;
+      color: #ffffff;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      /* overflow: hidden; */
+      /* height: 0; */
+    }
+
+    .rov img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      pointer-events: none;
+    }
+
+
+    /* .wallpaper {
+      background-image: url("static/img/wallp_rov5.jpg");
+      background-size: cover;
+      background-position: center;
+      height: 100vh;
+      display: grid;
+      align-content: center;
+      justify-content: center;
+      opacity: 0.90;
+     
+    } */
+
+    :root {
+      --color-1: #30475E;
+      --color-2: #30475E;
+      --color-3: #F05454;
+      --color-4: #222831;
+      --color-5: #F05454;
+    }
+
+    .wrapper {
+      /* background-color: black; */
+      /* background-image: url("static/img/wallp_rov.jpg"); */
+      line-height: 1;
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      min-height: calc(100vh - 16px);
+    }
+
+    h1 {
+      font-family: "Exo", sans-serif;
+      font-size: 15vw;
+      font-weight: 900;
+      width: -webkit-min-content;
+      width: -moz-min-content;
+      width: min-content;
+      margin: auto;
+      text-transform: uppercase;
+      background: linear-gradient(219deg,
+          var(--color-1) 19%,
+          transparent 19%, transparent 20%,
+          var(--color-2) 20%, var(--color-2) 39%,
+          transparent 39%, transparent 40%,
+          var(--color-3) 40%, var(--color-3) 59%,
+          transparent 59%, transparent 60%,
+          var(--color-4) 60%, var(--color-4) 79%,
+          transparent 79%, transparent 80%,
+          var(--color-5) 80%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+
+    }
+
+    .text {
+      padding: 1.5rem;
+      text-align: center;
+      background: radial-gradient(circle at 1.4% 1.4%, var(--color-1) .8%, transparent .8%),
+        radial-gradient(circle at 5.5% 3%, var(--color-2) .45%, transparent .45%),
+        radial-gradient(circle at 2.5% 3.5%, var(--color-3) .5%, transparent .5%),
+        radial-gradient(circle at 4.5% 1.2%, var(--color-4) .25%, transparent .25%),
+        radial-gradient(circle at 98% 98%, var(--color-1) .8%, transparent .8%),
+        radial-gradient(circle at 95% 95%, var(--color-2) .45%, transparent .45%),
+        radial-gradient(circle at 94.5% 97.5%, var(--color-3) .5%, transparent .5%),
+        radial-gradient(circle at 98.5% 95.5%, var(--color-4) .25%, transparent .25%);
+
+    }
+
+    @media screen and (min-width: 768px) {
+      h1 {
+        font-size: 6.5rem;
+      }
+    }
+
+    .sec {
+      position: relative;
+
+      /* padding: 100px; */
+      color: #ffffff;
+
+    }
+
+    #wallp_player_blue,
+    #wallp_player_red {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg" >
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <h3 class="text-white">ROV</h3>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+        aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/team">Team</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/rulec">กฎกติกา</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/schedulec">ตารางการแข่งขัน</a>
+          </li> {% if logged_in %}
+          <!-- ถ้าเข้าสู่ระบบแล้ว (logged_in เป็น True) -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle me-2" href="#" id="navbarDropdownMenuLink" role="button"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> จัดการข้อมูล </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="/school">School</a>
+              <a class="dropdown-item" href="/teamad">Team</a>
+              <a class="dropdown-item" href="/teammem">Player</a>
+              <a class="dropdown-item" href="/hero">Hero</a>
+              <a class="dropdown-item" href="/upload">ข้อมูลการแข่งขัน</a>
+              <a class="dropdown-item" href="/rule">กฎกติกา</a>
+              <a class="dropdown-item" href="/schedule">ตารางการแข่งขัน</a>
+              <a class="dropdown-item" href="/report">รายงาน</a>
+            </div>
+          </li> {% endif %}
+          <!-- ... รายการเมนูอื่น ๆ ... --> {% if logged_in %}
+          <!-- ถ้าเข้าสู่ระบบแล้ว (logged_in เป็น True) -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding: 0px;">
+              <img src="/static/img/login.jpg" width="40px"
+                style="border: solid 2px rgb(3, 245, 225); border-radius: 30px;">
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <!-- ใช้ id="logout-link" เพื่อระบุให้ JavaScript ทำงานกับปุ่ม Logout -->
+              <a class="dropdown-item" href="/profile">Profile</a>
+              <a class="dropdown-item" href="javascript:void(0);" onclick="showLogoutConfirmation();"> log out </a>
+            </div>
+          </li> {% else %}
+          <!-- ถ้ายังไม่ได้เข้าสู่ระบบ (logged_in เป็น False) -->
+          <li>
+            <a class="nav-link" href="/login"><i class="fa-solid fa-user fa-xl"></i></a>
+          </li> {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <section class="rov">
+    <div class="text">
+      <h1>rov esports</h1>
+    </div>
+
+    <img src="../static/img/wallp_player_blue.png" id='wallp_player_blue'>
+    <img src="../static/img/wallp_player_red.png" id='wallp_player_red'>
+    <h1 id='text'><span class="rov2"></span></h1>
+
+  </section>
+  <section class="sec">
+    <div id="tab">
+      <!--ชื่อหน้า-->
+      <h4>ตารางผลการแข่งขัน</h4>
+      <div class="border-top my-3"></div>
+      <div style="background-color: rgb(255, 255, 255); padding: 20px;border-radius: 10px;">
+        <div style="padding: 10px" class="d-flex justify-content-between">
+          <a href="#"></a>
+          <div class="input-group col-md-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+            </div>
+            <input type="text" id="searchInput" class="form-control" placeholder="ค้นหา">
+          </div>
+        </div>
+        <br>
+        <div class="container-fluid">
+          <!-- ส่วนตาราง --> {% if data %} <div class="row">
+            <div class="col-12">
+              <div id="resultTable">
+                <div class="table-responsive"> <!-- เพิ่มคลาส .table-responsive เพื่อให้ตารางเป็น responsive -->
+                <table class="table table-bordered text-center table-striped tablesorter">
+                  <thead>
+                    <tr>
+                      <th>ลำดับ</th>
+                      <th>ทีม <i class="fa-solid fa-sort filter-icon"></i></th>
+                      <th>ชนะ <i class="fa-solid fa-sort filter-icon"></i></th>
+                      <th>แพ้ <i class="fa-solid fa-sort filter-icon"></i></th>
+                      <th>รวม <i class="fa-solid fa-sort filter-icon"></i></th>
+                    </tr>
+                  </thead>
+                  <tbody> {% for row in data %} <tr>
+                      <td>{{ loop.index }}</td>
+                      <td><a href="/member/{{ row.0 }}">{{ row.0 }}</a></td>
+                      <td>{{ row.1 }}</td>
+                      <td>{{ row.2 }}</td>
+                      <td>{{ row.3 }}</td>
+                    </tr> {% endfor %} </tbody>
+                </table>
+                </div>
+                <!-- ลำดับหน้า -->
+                <nav aria-label="การแบ่งหน้าตารางผลการแข่งขัน">
+                  <ul class="pagination justify-content-center" id="resultTablePagination">
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div> {% else %} <div
+            style="text-align: center; height: 70vh; display: flex; justify-content: center; align-items: center;">
+            <p style="font-size: 20px;">ไม่พบข้อมูล</p>
+          </div> {% endif %} </div>
+      </div>
+    </div>
+
+  </section>
+  <!-- ค้นหาคำในตาราง -->
+  <script>
+    $(document).ready(function () {
+      // เมื่อเปลี่ยนค่าในช่องค้นหา
+      $("#searchInput").on("keyup", function () {
+        var value = $(this).val().toLowerCase(); // ข้อความที่ใส่ในช่องค้นหา
+        $("table tbody tr").filter(function () { // กรองแถวในตาราง
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1); // แสดง/ซ่อนแถวตามผลการค้นหา
+        });
+      });
+    });
+  </script>
+  <!-- เลื่อนตาราง -->
+  <script>
+    // ฟังก์ชันสำหรับจัดการการแสดงหน้าตาราง
+    let currentPage = 1;
+    const rowsPerPage = 50; // จำนวนแถวที่จะแสดงในแต่ละหน้า
+    function showPage(pageNum, tableId) {
+      $(`#${tableId} table tbody tr`).hide(); // ซ่อนแถวทั้งหมดในตาราง
+      const startIndex = (pageNum - 1) * rowsPerPage;
+      const endIndex = startIndex + rowsPerPage;
+      $(`#${tableId} table tbody tr`).slice(startIndex, endIndex).show(); // แสดงแถวสำหรับหน้าปัจจุบัน
+    }
+    // ฟังก์ชันเพิ่มการเปลี่ยนหน้าก่อนหน้า
+    function prevPage(tableId) {
+      if (currentPage > 1) {
+        currentPage--;
+        showPage(currentPage, tableId);
+      }
+    }
+    // ฟังก์ชันเพิ่มการเปลี่ยนหน้าถัดไป
+    function nextPage(tableId, totalPages) {
+      if (currentPage < totalPages) {
+        currentPage++;
+        showPage(currentPage, tableId);
+      }
+    }
+    // เรียกใช้ฟังก์ชันเพื่อเปิดใช้งานการแบ่งหน้า
+    function initializePagination(tableId) {
+      const totalRows = $(`#${tableId} table tbody tr`).length;
+      const totalPages = Math.ceil(totalRows / rowsPerPage);
+      const paginationElement = $(`#${tableId}Pagination`);
+      paginationElement.empty();
+      // สร้างรายการแบ่งหน้าโดยอัตโนมัติ
+      for (let i = 1; i <= totalPages; i++) {
+        const listItem = `<li class="page-item"><a class="page-link me-2" href="#">${i}</a></li>`;
+        paginationElement.append(listItem);
+      }
+      // แสดงหน้าแรกเป็นค่าเริ่มต้น
+      showPage(currentPage, tableId);
+      // จัดการเหตุการณ์การคลิกที่รายการแบ่งหน้า
+      paginationElement.on("click", "a", function (event) {
+        event.preventDefault();
+        currentPage = parseInt($(this).text(), 10);
+        showPage(currentPage, tableId);
+      });
+    }
+    // เรียกใช้ฟังก์ชัน initializePagination สำหรับแต่ละตาราง
+    $(document).ready(function () {
+      initializePagination("resultTable");
+      // ทำซ้ำสำหรับตารางอื่น ๆ
+    });
+    // เพิ่มการเชื่อมต่อฟังก์ชันเปลี่ยนหน้ากับปุ่ม Previous และ Next
+    $(document).ready(function () {
+      $("#prevBtn").on("click", function () {
+        prevPage("playerTable");
+      });
+      $("#nextBtn").on("click", function () {
+        const totalPlayerRows = $("#playerTable table tbody tr").length;
+        const playerTotalPages = Math.ceil(totalPlayerRows / rowsPerPage);
+        nextPage("playerTable", playerTotalPages);
+      });
+      // ทำซ้ำสำหรับตารางอื่น ๆ ตามที่ต้องการ
+    });
+  </script>
+  <!-- ตัวกรองตาราง -->
+  <script>
+    $(document).ready(function () {
+      $(".tablesorter").tablesorter({
+        widgets: ['zebra']
+      });
+    });
+  </script>
+  <script>
+    var typingEffect = new Typed(".rov2", {
+      strings: ["ROV"],
+      loop: true,
+      typeSpeed: 100,
+      backSpeed: 80,
+      backDelay: 1500
+    });
+  </script>
+  <script>
+    let text = document.getElementById("text");
+    let blue = document.getElementById("wallp_player_blue");
+    let red = document.getElementById("wallp_player_red");
+
+    window.addEventListener("scroll", () => {
+      let value = window.scrollY;
+
+      text.style.marginTop = value * 2.5 + "px";
+      blue.style.left = value * 1.5 + "px";
+      red.style.left = value * -1.5 + "px";
+    });
+  </script>
+  <script src="sweetAlert.js"></script>
+  <script src="../static/js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+  <!-- เรียกใช้ jQuery tablesorter -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js">
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
+
+.box {
+  padding: 2% 9%;
+}
+
+label,h3,li {
+  color: #000000;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.swiper {
+  width: 100%;
+  height: 100%;
+  border-radius:1em;
+}
+
+.swiper-slide {
+  font-size: 18px;
+  background: #ffffff71;
+  border-radius:1em;
+  padding: 3% 9%;
+  box-shadow: 0px 3px 10px -2px rgba(0, 0, 0, 0.411);
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius:1em;
+}
+
+.infom {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 10px;
+  flex-wrap: wrap;
+}
+
+.infom > li {
+  display: grid;
+  object-fit: contain;
+  flex: 1;
+}
+
+.infom2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.infom2 > label,
+.infom2 > input {
+  margin-right: 15px;
+}
+
+@media screen and (max-width: 768px) {
+  .infom {
+      grid-template-columns: 1fr; /* เปลี่ยนจาก 2 คอลัมน์เป็น 1 คอลัมน์เมื่อย่อหน้าจอ */
+  }
+  .swiper-slide {
+    padding: 5% 9%;
+  }
+
+  .infom2 {
+    flex-direction: column; /* เปลี่ยนเรียงข้อมูลในแนวแกนตั้งเมื่อย่อหน้าจอ */
+    align-items: flex-start; /* ชิดข้อมูลไปทางซ้ายเมื่อย่อหน้าจอ */
+  }
+}
+input[type="text"] {
+  border: 1px solid #ccc;
+  padding: 10px;
+  font-size: 15px;
+  transition: border-color 0.3s ease-in-out;
+  border-radius: 8px; /* ปรับขนาดกรอบด้วย border-radius */
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: #000;
+}
+
